@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Display Webcam Stream</title>
+
+<style>
+#container {
+	margin: 0px auto;
+	width: 500px;
+	height: 375px;
+	border: 10px #333 solid;
+}
+#videoElement {
+	width: 500px;
+	height: 375px;
+	background-color: #666;
+}
+</style>
+</head>
+
+<body>
+<div id="container">
+	<video autoplay="true" id="videoElement">
+
+	</video>
+</div>
+<button id="stop">Stop Video</button>
+<button id="start">Start Video</button>
+<p id="webCamStatus">Loading...</p>
+
+<script>
+    var video = document.querySelector("#videoElement");
+    var stopVideo = document.querySelector("#stop");
+    var startVideo = document.querySelector("#start");
+
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+          video.srcObject = stream;
+          document.getElementById("webCamStatus").innerHTML = "Webcam loaded."
+        })
+        .catch(function (err0r) {
+          console.log("Something went wrong!");
+        });
+    }
+
+    stopVideo.addEventListener("click", stop, false);
+    startVideo.addEventListener("click", start, false);
+
+    function stop(e) {
+      console.log("function stop called.")
+      try{
+          var stream = video.srcObject;
+          var tracks = stream.getTracks();
+          for (var i = 0; i < tracks.length; i++) {
+            var track = tracks[i];
+            track.stop();
+          }
+          video.srcObject = null;
+          document.getElementById("webCamStatus").innerHTML = "Webcam Stopped";
+      }
+      catch(err) {
+        console.log("webcam already stopped. error trapped : ", err.message);
+      }
+    }
+
+    function start(e) {
+      console.log("function start called.")
+      if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function (stream) {
+            video.srcObject = stream;
+            document.getElementById("webCamStatus").innerHTML = "Webcam Started"
+          })
+          .catch(function (err0r) {
+            console.log("Something went wrong!");
+          });
+      }
+    }
+
+</script>
+</body>
+</html>
